@@ -13,13 +13,15 @@ data_gen_args = dict(rotation_range=0.2,
                     fill_mode='nearest')
 
 data_gen_args2 = dict()
-myGene = trainGenerator(16,'data3/train','image','label',data_gen_args2,save_to_dir = None)
+train_path = '/sim/asinghvi/wheat_processed_v2/train'
+test_path = '/sim/asinghvi/wheat_processed_v2/test'
+myGene = trainGenerator(8,train_path,'image','label',data_gen_args2,save_to_dir = None)
 
-model = unet()
-#model = unet('unet_sos.hdf5')
+#model = unet()
+model = unet('unet_sos.hdf5')
 model_checkpoint = ModelCheckpoint('unet_sos.hdf5', monitor='loss',verbose=1, save_best_only=True)
-model.fit_generator(myGene,steps_per_epoch=20,epochs=50,callbacks=[model_checkpoint])
+model.fit_generator(myGene,steps_per_epoch=250,epochs=100,callbacks=[model_checkpoint])
 
-testGene = testGenerator("data3/test")
-results = model.predict_generator(testGene,30,verbose=1)
-saveResult("data3/test",results)
+testGene = testGenerator(test_path, 200)
+results = model.predict_generator(testGene,200,verbose=1)
+saveResult(test_path,results)

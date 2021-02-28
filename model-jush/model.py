@@ -32,17 +32,18 @@ def unet(pretrained_weights = None,input_size = (256,256,1)):
     conv4 = BatchNormalization()(conv4)
     conv4 = Conv2D(512, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv4)
     conv4 = BatchNormalization()(conv4)
-    #drop4 = Dropout(0.5)(conv4)
-    #pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
-    pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
+    drop4 = Dropout(0.1)(conv4)
+    pool4 = MaxPooling2D(pool_size=(2, 2))(drop4)
+    #pool4 = MaxPooling2D(pool_size=(2, 2))(conv4)
 
     conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(pool4)
     conv5 = BatchNormalization()(conv5)
     conv5 = Conv2D(1024, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(conv5)
     conv5 = BatchNormalization()(conv5)
-    #drop5 = Dropout(0.5)(conv5)
+    drop5 = Dropout(0.1)(conv5)
 
-    up6 = Conv2D(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv5))
+    #up6 = Conv2D(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(conv5))
+    up6 = Conv2D(512, 2, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(UpSampling2D(size = (2,2))(drop5))
     up6 = BatchNormalization()(up6)
     #merge6 = concatenate([drop4,up6], axis = 3)
     merge6 = concatenate([conv4,up6], axis = 3)
@@ -82,7 +83,7 @@ def unet(pretrained_weights = None,input_size = (256,256,1)):
 
     #model.compile(optimizer = Adam(lr = 1e-4), loss = 'binary_crossentropy', metrics = ['accuracy'])
     #model.compile(optimizer = Adam(lr = 3e-5), loss = 'mean_squared_error', metrics = ['accuracy'])
-    model.compile(optimizer = Nadam(lr = 0.002), loss = 'mean_squared_error', metrics = ['accuracy'])
+    model.compile(optimizer = Nadam(lr = 0.001), loss = 'mean_squared_error', metrics = ['accuracy'])
     #model.compile(optimizer = SGD(learning_rate=0.02, momentum=0.9), loss = 'mean_squared_error', metrics = ['accuracy'])
     #model.summary()
 
